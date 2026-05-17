@@ -1,5 +1,14 @@
 // Number of cards to print. Each card: GoA list on front, number on back.
-#let n_cards = 30
+#let n_cards = 40
+
+// How many cards to batch per A4 sheet side when printing A5-on-A4.
+// Must be a power of 2, and n_cards must be divisible by runs.
+// runs=1 -> 1,GO,2,GO,...   runs=4 -> 1,2,3,4,GO,GO,GO,GO,5,...
+#let runs = 2
+
+#let _log2 = calc.log(runs, base: 2)
+#assert(calc.rem(_log2, 1) == 0, message: "runs must be a power of 2")
+#assert(calc.rem(n_cards, runs) == 0, message: "n_cards must be divisible by runs")
 
 #set page("a5", margin: (x: 1cm, y: 1cm))
 #set text(lang: "de", size: 10pt, font: "Inter")
@@ -118,10 +127,16 @@
   )]
 }
 
-// -- Render all cards (alternating GoA / number pages for duplex printing) --
-#for i in range(1, n_cards + 1) {
-  number_page(i)
-  pagebreak()
-  goa_page()
-  if i < n_cards { pagebreak() }
+// -- Render all cards grouped for duplex A5-on-A4 printing --
+// Each group: `runs` number pages followed by `runs` GO pages.
+#let n_groups = int(n_cards / runs)
+#for g in range(n_groups) {
+  for j in range(runs) {
+    number_page(g * runs + j + 1)
+    pagebreak()
+  }
+  for j in range(runs) {
+    goa_page()
+    if g < n_groups - 1 or j < runs - 1 { pagebreak() }
+  }
 }
