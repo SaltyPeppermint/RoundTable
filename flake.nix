@@ -38,8 +38,7 @@
           typstSource = "stimmkarten.typ";
 
           fontPaths = [
-            # Add paths to fonts here
-            # "${pkgs.roboto}/share/fonts/truetype"
+            "${pkgs.inter}/share/fonts/truetype"
           ];
 
           virtualPaths = [

@@ -1,13 +1,12 @@
 // Number of cards to print. Each card: GoA list on front, number on back.
 #let n_cards = 30
 
-#set page(size: "A5", margin: (x: 1.3cm, y: 1.2cm))
-#set text(lang: "de", size: 9pt)
+#set page("a5", margin: (x: 1.2cm, y: 1.2cm))
+#set text(lang: "de", size: 12pt, font: "Inter")
 
 // -- GoA items from § Anträge zur Geschäftsordnung --------------------------
 #let goa_items = (
-  ("Änderung der beschlossenen Tagesordnung",
-   "(umfasst nicht die nachträgliche Aufnahme fristversäumter Anträge)"),
+  ("Änderung der beschlossenen Tagesordnung", "(umfasst nicht die nachträgliche Aufnahme fristversäumter Anträge)"),
   ("Beschränkung der Redezeit", none),
   ("Schließung der Redeliste", none),
   ("Schluss der Debatte, ggf. sofortige Beschlussfassung", none),
@@ -17,66 +16,57 @@
   ("Verweisung in eine Arbeitsgruppe oder Branch des xHain", none),
   ("Fünfminütige Sitzungspause", "(maximal zwei pro Sitzung)"),
   ("Ausschluss der Öffentlichkeit", none),
-  ("Feststellung der Beschlussfähigkeit", "¹"),
+  ("Feststellung der Beschlussfähigkeit", "(Keine Gegenrede; gilt mit Antragstellung als angenommen.)"),
   ("Schluss der Sitzung", none),
   ("Konstruktive Ablösung oder Abwahl der Sitzungsleitung", none),
-  ("Einrichtung einer FLINTA*-Redeliste für den aktuellen TOP", none),
+  ("Einrichtung einer FLINTA*-Redeliste für den aktuellen Tagesordnungspunkt", none),
 )
+
+// -- Shared card header -----------------------------------------------------
+#let card_header(title) = {
+  text(size: 14pt, weight: "bold")[#title]
+  v(2pt)
+  text(size: 10pt, style: "italic")[xHain Round Table]
+  v(6pt)
+  line(length: 100%, stroke: 0.5pt)
+  v(6pt)
+}
+
+// -- Shared card footer -----------------------------------------------------
+#let card_footer(label) = {
+  line(length: 100%, stroke: 0.5pt)
+  align(center)[#text(size: 7pt, fill: luma(100))[#label]]
+}
 
 // -- GoA side ---------------------------------------------------------------
 #let goa_page() = {
-  // Header
-  align(center)[
-    #text(size: 14pt, weight: "bold")[Anträge zur Geschäftsordnung]
-    #v(2pt)
-    #text(size: 8.5pt, style: "italic")[xHain Round Table]
-  ]
-  v(6pt)
-  line(length: 100%, stroke: 0.5pt)
-  v(7pt)
-
+  align(center)[#card_header[Anträge zur Geschäftsordnung]]
   // List
   grid(
-    columns: (1.4em, 1fr),
-    row-gutter: 5pt,
-    column-gutter: 3pt,
-    ..goa_items.enumerate().map(((i, item)) => {
-      let (title, note) = item
-      (
-        text(weight: "bold")[#(i + 1).],
-        if note == none {
-          text(title)
-        } else if note == "¹" {
-          [#title #super[1]]
-        } else {
-          [#title \ #text(size: 7.5pt, style: "italic")[#note]]
-        },
-      )
-    }).flatten()
+    columns: (1.5em, 1fr),
+    row-gutter: 10pt,
+    column-gutter: 2pt,
+    ..goa_items
+      .enumerate()
+      .map(((i, item)) => {
+        let (title, note) = item
+        (
+          text(weight: "bold")[#(i + 1).],
+          if note == none { text(title) } else { [#title \ #text(size: 10pt, style: "italic")[#note]] },
+        )
+      })
+      .flatten()
   )
-
   v(1fr)
-  line(length: 100%, stroke: 0.5pt)
-  v(4pt)
-  grid(
-    columns: (1fr, 1fr),
-    align(left)[
-      #text(size: 7pt, fill: luma(100))[
-        #super[1] Keine Gegenrede; gilt mit Antragstellung als angenommen.
-      ]
-    ],
-    align(right)[
-      #text(size: 7pt, fill: luma(100))[Anzeigen: beide Hände heben]
-    ],
-  )
+  card_footer[Melden: Beide Hände heben]
 }
 
 // -- Number side ------------------------------------------------------------
 #let number_page(n) = {
+  place(top + center)[#card_header[Stimmkarte]]
+  place(bottom)[#card_footer[Melden: Eine Hand heben]]
   align(center + horizon)[
-    #text(size: 8.5pt, style: "italic")[xHain Round Table · Stimmkarte]
-    #v(8pt)
-    #text(size: 100pt, weight: "bold")[#n]
+    #text(size: 300pt, weight: "bold")[#n]
   ]
 }
 
