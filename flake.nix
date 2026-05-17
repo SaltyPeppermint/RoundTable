@@ -35,7 +35,7 @@
 
         src = typixLib.cleanTypstSource ./.;
         commonArgs = {
-          typstSource = "stimmkarten.typ";
+          typstSource = "stimm-und-meldekarten.typ";
 
           fontPaths = [
             "${pkgs.inter}/share/fonts/truetype"

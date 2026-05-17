@@ -1,4 +1,4 @@
 result
 result-*
 .direnv/
-stimmkarten.pdf
+**/*.pdf

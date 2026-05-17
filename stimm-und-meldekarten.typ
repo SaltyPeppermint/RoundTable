@@ -64,9 +64,9 @@
 #let card_footer(de, en) = {
   line(length: 100%, stroke: 0.5pt)
   align(center)[
-    #text(size: 10pt)[#de]
-    #text(fill: luma(50))[#sym.dot.c]
-    #text(fill: luma(100))[#en]
+    #text(size: 8pt)[#de]
+    #text(size: 8pt, fill: luma(50))[#sym.dot.c]
+    #text(size: 8pt, fill: luma(100))[#en]
   ]
 }
 
@@ -101,20 +101,20 @@
   )
   parbreak()
   card_footer(
-    [Melden: #underline[Beide] Hände heben],
-    [Signal: Raise #underline[both] hands],
+    [Geschäftsordnungsantrag: #underline[Beide] Hände heben],
+    [Procedural Motion: Raise #underline[both] hands],
   )
 }
 
 // -- Number side ------------------------------------------------------------
 #let number_page(n) = {
-  place(top + center)[#card_header("Stimmkarte", "Voting Card")]
+  place(top + center)[#card_header("Stimm- und Meldekarte", "Voting and Speaker's Card")]
   align(center + horizon)[
     #text(size: 300pt, weight: "bold")[#n]
   ]
   place(bottom)[#card_footer(
-    [Melden: #underline[Eine] Hand heben],
-    [Signal: Raise #underline[one] hand],
+    [Abstimmen/Melden: #underline[Eine] Hand heben],
+    [Vote/Signal: Raise #underline[one] hand],
   )]
 }
 
