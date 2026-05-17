@@ -120,8 +120,8 @@
 
 // -- Render all cards (alternating GoA / number pages for duplex printing) --
 #for i in range(1, n_cards + 1) {
-  goa_page()
-  pagebreak()
   number_page(i)
+  pagebreak()
+  goa_page()
   if i < n_cards { pagebreak() }
 }
