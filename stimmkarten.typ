@@ -51,42 +51,43 @@
 )
 
 // -- Shared card header -----------------------------------------------------
-#let card_header(title) = {
-  let (de, en) = title
+#let card_header(de, en) = {
   text(size: 12pt, weight: "bold")[#de\ ]
   text(size: 12pt, weight: "bold", fill: luma(100))[#en]
-  v(0pt)
-  text(size: 10pt, style: "italic")[xHain Round Table]
-  v(0pt)
+  parbreak()
+  text(style: "italic")[xHain Round Table]
+  parbreak()
   line(length: 100%, stroke: 0.5pt)
 }
 
 // -- Shared card footer -----------------------------------------------------
-#let card_footer(label) = {
-  let (de, en) = label
+#let card_footer(de, en) = {
   line(length: 100%, stroke: 0.5pt)
-  align(center)[#text(size: 7pt, fill: luma(100))[#de #sym.dot.c #text(fill: luma(150))[#en]]]
+  align(center)[
+    #text(size: 10pt)[#de]
+    #text(fill: luma(50))[#sym.dot.c]
+    #text(fill: luma(100))[#en]
+  ]
 }
 
 // -- Render one numbered grid row (number cell + bilingual content cell) -----
 #let goa_row(i, item) = {
   let ((de_title, en_title), notes) = item
-  let base = 10pt
   let de_block = if notes == none { de_title } else {
-    [#de_title #text(size: base, style: "italic")[#notes.at(0)]]
+    [#de_title #text(style: "italic")[#notes.at(0)]]
   }
   let en_block = if notes == none { en_title } else {
-    [#en_title #text(size: base, style: "italic")[#notes.at(1)]]
+    [#en_title #text(style: "italic")[#notes.at(1)]]
   }
   (
     text(weight: "bold")[#(i + 1).],
-    [#de_block \ #text(size: base, fill: luma(100))[#en_block]],
+    [#de_block \ #text(fill: luma(100))[#en_block]],
   )
 }
 
 // -- GoA side ---------------------------------------------------------------
 #let goa_page() = {
-  align(center)[#card_header(("Anträge zur Geschäftsordnung", "Procedural Motions"))]
+  align(center)[#card_header("Anträge zur Geschäftsordnung", "Procedural Motions")]
   grid(
     columns: (1.5em, 1fr),
     row-gutter: 8pt,
@@ -98,17 +99,23 @@
       })
       .flatten()
   )
-  v(0pt)
-  card_footer(("Melden: Beide Hände heben", "Signal: Raise both hands"))
+  parbreak()
+  card_footer(
+    [Melden: #underline[Beide] Hände heben],
+    [Signal: Raise #underline[both] hands],
+  )
 }
 
 // -- Number side ------------------------------------------------------------
 #let number_page(n) = {
-  place(top + center)[#card_header(("Stimmkarte", "Voting Card"))]
-  place(bottom)[#card_footer(("Melden: Eine Hand heben", "Signal: Raise one hand"))]
+  place(top + center)[#card_header("Stimmkarte", "Voting Card")]
   align(center + horizon)[
     #text(size: 300pt, weight: "bold")[#n]
   ]
+  place(bottom)[#card_footer(
+    [Melden: #underline[Eine] Hand heben],
+    [Signal: Raise #underline[one] hand],
+  )]
 }
 
 // -- Render all cards (alternating GoA / number pages for duplex printing) --
