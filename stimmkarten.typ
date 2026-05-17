@@ -1,70 +1,111 @@
 // Number of cards to print. Each card: GoA list on front, number on back.
 #let n_cards = 30
 
-#set page("a5", margin: (x: 1.2cm, y: 1.2cm))
-#set text(lang: "de", size: 12pt, font: "Inter")
+#set page("a5", margin: (x: 1cm, y: 1cm))
+#set text(lang: "de", size: 10pt, font: "Inter")
 
 // -- GoA items from § Anträge zur Geschäftsordnung --------------------------
+// Each entry: ((DE title, EN title), (DE note, EN note) or none)
 #let goa_items = (
-  ("Änderung der beschlossenen Tagesordnung", "(umfasst nicht die nachträgliche Aufnahme fristversäumter Anträge)"),
-  ("Beschränkung der Redezeit", none),
-  ("Schließung der Redeliste", none),
-  ("Schluss der Debatte, ggf. sofortige Beschlussfassung", none),
-  ("Wiederaufnahme der Debatte", none),
-  ("Nichtbehandlung eines Antrags", none),
-  ("Vertagung eines Punktes der Tagesordnung", none),
-  ("Verweisung in eine Arbeitsgruppe oder Branch des xHain", none),
-  ("Fünfminütige Sitzungspause", "(maximal zwei pro Sitzung)"),
-  ("Ausschluss der Öffentlichkeit", none),
-  ("Feststellung der Beschlussfähigkeit", "(Keine Gegenrede; gilt mit Antragstellung als angenommen.)"),
-  ("Schluss der Sitzung", none),
-  ("Konstruktive Ablösung oder Abwahl der Sitzungsleitung", none),
-  ("Einrichtung einer FLINTA*-Redeliste für den aktuellen Tagesordnungspunkt", none),
+  (
+    ("Änderung der beschlossenen Tagesordnung", "Amendment of the adopted agenda"),
+    (
+      "(umfasst nicht die nachträgliche Aufnahme fristversäumter Anträge)",
+      "(excl. subsequent addition of motions past the submission deadline)",
+    ),
+  ),
+  (("Beschränkung der Redezeit", "Limitation of speaking time"), none),
+  (("Schließung der Redeliste", "Closure of the speakers list"), none),
+  (("Schluss der Debatte, ggf. sofortige Beschlussfassung", "Closure of debate, possibly with immediate vote"), none),
+  (("Wiederaufnahme der Debatte", "Reopening of debate"), none),
+  (("Nichtbehandlung eines Antrags", "Non-consideration of a motion"), none),
+  (("Vertagung eines Punktes der Tagesordnung", "Deferral of an agenda item"), none),
+  (
+    ("Verweisung in eine Arbeitsgruppe oder Branch des xHain", "Referral to a working group or branch of the xHain"),
+    none,
+  ),
+  (
+    ("Fünfminütige Sitzungspause", "Five-minute session recess"),
+    ("(maximal zwei pro Sitzung)", "(maximum two per session)"),
+  ),
+  (("Ausschluss der Öffentlichkeit", "Exclusion of the public"), none),
+  (
+    ("Feststellung der Beschlussfähigkeit", "Establishment of quorum"),
+    ("(Keine Gegenrede möglich)", "(No counter-speech allowed)"),
+  ),
+  (("Schluss der Sitzung", "Closure of the session"), none),
+  (
+    (
+      "Konstruktive Ablösung oder Abwahl der Sitzungsleitung",
+      "Constructive vote of no confidence in or removal of the session chair",
+    ),
+    none,
+  ),
+  (
+    (
+      "Einrichtung einer FLINTA*-Redeliste für den aktuellen Tagesordnungspunkt",
+      "Establishment of a FLINTA*-speakers list for the current agenda item",
+    ),
+    none,
+  ),
 )
 
 // -- Shared card header -----------------------------------------------------
 #let card_header(title) = {
-  text(size: 14pt, weight: "bold")[#title]
-  v(2pt)
+  let (de, en) = title
+  text(size: 12pt, weight: "bold")[#de\ ]
+  text(size: 12pt, weight: "bold", fill: luma(100))[#en]
+  v(0pt)
   text(size: 10pt, style: "italic")[xHain Round Table]
-  v(6pt)
+  v(0pt)
   line(length: 100%, stroke: 0.5pt)
-  v(6pt)
 }
 
 // -- Shared card footer -----------------------------------------------------
 #let card_footer(label) = {
+  let (de, en) = label
   line(length: 100%, stroke: 0.5pt)
-  align(center)[#text(size: 7pt, fill: luma(100))[#label]]
+  align(center)[#text(size: 7pt, fill: luma(100))[#de #sym.dot.c #text(fill: luma(150))[#en]]]
+}
+
+// -- Render one numbered grid row (number cell + bilingual content cell) -----
+#let goa_row(i, item) = {
+  let ((de_title, en_title), notes) = item
+  let base = 10pt
+  let de_block = if notes == none { de_title } else {
+    [#de_title #text(size: base, style: "italic")[#notes.at(0)]]
+  }
+  let en_block = if notes == none { en_title } else {
+    [#en_title #text(size: base, style: "italic")[#notes.at(1)]]
+  }
+  (
+    text(weight: "bold")[#(i + 1).],
+    [#de_block \ #text(size: base, fill: luma(100))[#en_block]],
+  )
 }
 
 // -- GoA side ---------------------------------------------------------------
 #let goa_page() = {
-  align(center)[#card_header[Anträge zur Geschäftsordnung]]
-  // List
+  align(center)[#card_header(("Anträge zur Geschäftsordnung", "Procedural Motions"))]
   grid(
     columns: (1.5em, 1fr),
-    row-gutter: 10pt,
+    row-gutter: 8pt,
     column-gutter: 2pt,
     ..goa_items
       .enumerate()
       .map(((i, item)) => {
-        let (title, note) = item
-        (
-          text(weight: "bold")[#(i + 1).],
-          if note == none { text(title) } else { [#title \ #text(size: 10pt, style: "italic")[#note]] },
-        )
+        goa_row(i, item)
       })
       .flatten()
   )
-  v(1fr)
-  card_footer[Melden: Beide Hände heben]
+  v(0pt)
+  card_footer(("Melden: Beide Hände heben", "Signal: Raise both hands"))
 }
 
 // -- Number side ------------------------------------------------------------
 #let number_page(n) = {
-  place(top + center)[#card_header[Stimmkarte]]
-  place(bottom)[#card_footer[Melden: Eine Hand heben]]
+  place(top + center)[#card_header(("Stimmkarte", "Voting Card"))]
+  place(bottom)[#card_footer(("Melden: Eine Hand heben", "Signal: Raise one hand"))]
   align(center + horizon)[
     #text(size: 300pt, weight: "bold")[#n]
   ]
